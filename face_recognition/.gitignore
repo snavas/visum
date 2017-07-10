@@ -5,3 +5,4 @@ inception/
 retrained_graph.pb
 retrained_labels.txt
 training_summaries/
+my_predictions.csv
