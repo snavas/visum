@@ -1,5 +1,5 @@
 # exclude data
-emotion_analysis\data\*
-face_recognition\data\*
-face_recognition\data_test\*
-human_activities\segments\*
+emotion_analysis/data
+face_recognition/data
+face_recognition/data_test
+human_activities/segments
