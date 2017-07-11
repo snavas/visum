@@ -61,6 +61,10 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
                 x = image.img_to_array(image.load_img(data[i], target_size=output_shape)).astype(np.float32, copy=False)
                 y = np.array(labels[i], copy=True)
 
+                #plt.imshow(x/255, cmap='gray')#,plt.title(y+"-"+data[i])
+                #print(y,data[i])
+                #plt.show()
+
                 # Augment data
                 #if augmenter is not None:
                 #    assert (type(augmenter) is ImageDataAugmenter)

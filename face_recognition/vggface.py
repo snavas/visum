@@ -33,7 +33,7 @@ def define_model(n_output, lr, dropout=1.):
         x = Dropout(dropout, seed=0, name='dp6')(x)
     x = fc7(x)
     x = fc7r(x)
-    # x = Dense(hidden_dim, activation='relu', kernel_initializer=weight_init, name='fc7')(x)
+    #x = Dense(hidden_dim, activation='relu', kernel_initializer=weight_init, name='fc7')(x)
     if (dropout < 1.):
         x = Dropout(dropout, seed=1, name='dp7')(x)
     out = Dense(n_output, activation='softmax', kernel_initializer=weight_init, name='fc8')(x)
@@ -44,7 +44,7 @@ def define_model(n_output, lr, dropout=1.):
     #x = vgg_model.get_layer('fc6').output
     #x = Flatten(name='flatten')(last_layer)
     #x = Dense(hidden_dim, activation='relu', kernel_initializer=weight_init, name='fc6')(x)
-    #if (dropout < 1.):
+    #if (dropout < 1.):.
     #    x = Dropout(dropout, seed=0, name='dp6')(x)
     #x = Dense(hidden_dim, activation='relu', kernel_initializer=weight_init, name='fc7')(x)
     #if (dropout < 1.):
@@ -52,8 +52,8 @@ def define_model(n_output, lr, dropout=1.):
     #out = Dense(n_output, activation='softmax',  kernel_initializer=weight_init, name='fc8')(x)
 
     # Freeze first conv layers
-    #for layer in vgg_model.layers[:12]:
-    #    layer.trainable = False
+    for layer in vgg_model.layers[:12]:
+        layer.trainable = False
 
     model = Model(image_input, out)
 
@@ -61,13 +61,13 @@ def define_model(n_output, lr, dropout=1.):
     model.summary()
 
     # Initialize optimizer
-    # opt = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
-    opt = keras.optimizers.adam(lr, decay=1e-6)
+    opt = keras.optimizers.SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
+    #opt = keras.optimizers.adam(lr, decay=1e-6)
 
     # Use mean euclidean distance as loss and angular error and mse as metric
     model.compile(loss='categorical_crossentropy',
                   optimizer=opt,
-                  metrics=[metrics.categorical_accuracy])
+                  metrics=['accuracy', metrics.categorical_accuracy])
 
     return model
 

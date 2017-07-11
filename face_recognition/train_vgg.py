@@ -23,6 +23,14 @@ MODEL_INPUT_WIDTH = 244
 MODEL_INPUT_HEIGHT = 244
 MODEL_INPUT_DEPTH = 3
 
+
+def one_hot_encoder(ids, rows, cols):
+    onehot_y = np.zeros((rows, cols))
+    for i, item in enumerate(ids):
+        onehot_y[i, np.int(item) -1] = 1
+    return onehot_y
+
+
 def create_image_lists(image_dir, testing_percentage, validation_percentage):
   """Builds a list of training images from the file system.
 
@@ -169,6 +177,8 @@ if __name__ == "__main__":
               ' - multiple classes are needed for classification.')
 
     train_X, train_Y = get_data_lists(image_lists)
+    train_Y = one_hot_encoder(train_Y, len(train_Y), 19)
+
     # Shuffle
     train_X, train_Y = unison_shuffled_copies(train_X, train_Y)
     #train_X = train_X[:100] #Limit the dataset to test in CPU
@@ -179,11 +189,11 @@ if __name__ == "__main__":
     # Initialize model and params
     np.random.seed(seed=40)
 
-    batch_size = 32
+    batch_size = 16
     output_shape = (224, 224, 3)
     n_output = 19
-    epochs = 100
-    lr = 0.0001
+    epochs = 40
+    lr = 0.00001
     dropout = 0.3
 
     # Define model
