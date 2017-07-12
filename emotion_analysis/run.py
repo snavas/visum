@@ -7,6 +7,7 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 import warnings
 
@@ -45,6 +46,12 @@ if __name__ == "__main__":
     ## Training data
     X_train, kpts_train, y_train = load_csv(train_fn, istrain=True)
     print(X_train.shape, kpts_train.shape, y_train.shape)
+
+    for i, pic in enumerate(X_train):
+        plt.figure()
+        plt.imshow(pic,cmap='gray')
+        plt.show()
+        os.system("pause")
 
     ## Test data
     X_test, kpts_test = load_csv(test_fn, istrain=False)
@@ -95,9 +102,9 @@ if __name__ == "__main__":
 
 
     if len(os.sys.argv) == 1:
-	outf="my_predictions.csv"
+        outf="my_predictions.csv"
     else:
-	outf=os.sys.argv[1]
+        outf=os.sys.argv[1]
 
     f = open(outf, 'w')
     f.write('\n'.join(output))
