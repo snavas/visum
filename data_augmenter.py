@@ -31,18 +31,24 @@ class ImageDataAugmenter(object):
         self.contrast = contrast
 
     def augment(self, x, y):
-        #Flip
-        #if self.flip is not None:
-            #size_y = x.shape[1]
-            #size_x = x.shape[0]
-            # Vertical
-            #if np.random.random() < self.flip:
-                #x = flip_axis(x, 1)
-                #y[0] = -y[0]
-            # Horizontal
-            #if np.random.random() < self.flip:
-                #x = flip_axis(x, 0)
-                #y[1] = -y[1]
+        # Flip
+        if self.flip is not None:
+            width = x.shape[0]
+            height = x.shape[1]
+            # HORIZONTAL FLIP
+            if np.random.random() < self.flip:
+                x = cv.flip(x, 0)
+                for i, lndmk in enumerate(y):
+                    x_axis = width / 2
+                    dx = lndmk[1] - x_axis
+                    lndmk[1] -= dx * 2
+            # VERTICAL FLIP
+            if np.random.random() < self.flip:
+                x = cv.flip(x, 1)
+                for i, lndmk in enumerate(y):
+                    y_axis = height / 2
+                    dy = lndmk[0] - y_axis
+                    lndmk[0] -= dy * 2
 
         # Gamma
         if self.gamma is not None:
