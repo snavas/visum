@@ -75,12 +75,12 @@ if __name__ == "__main__":
         new_X_test[i] = new_pic
 
     # VGG parameters
-    batch_size = 16
+    batch_size = 32
     output_shape = (224, 224, 3)
     n_output = 8
     epochs = 15
     lr = 0.0001
-    dropout = 0.5
+    dropout = 0.3
 
     # Define model
     model = define_model(n_output, lr, dropout)
@@ -103,11 +103,11 @@ if __name__ == "__main__":
                                    height_shift_range=0.2,
                                    width_shift_range=0.3,
                                    gaussian=[0, 0.3],
-                                   illumination=None,
+                                   illumination=[-20, 20],
                                    zoom=[0.85, 1.15],
                                    flip=0.25,
                                    gamma=None,
-                                   contrast=None)
+                                   contrast=[-20, 20])
 
     # Fit model and save statistics in hist
     hist = model.fit_generator(
