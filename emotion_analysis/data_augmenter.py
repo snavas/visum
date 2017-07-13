@@ -2,8 +2,10 @@ import numpy as np
 import scipy.ndimage
 import PIL.Image
 import cv2 as cv
+import numpy
 #from keras.preprocessing.image import flip_axis
 from keras.preprocessing import image as imagek
+from PIL import Image
 import matplotlib.pyplot as plt
 
 class ImageDataAugmenter(object):
@@ -25,7 +27,7 @@ class ImageDataAugmenter(object):
                      'height_shift_range': height_shift_range}
         self.rotation_prob = rotation_prob
         self.shift_prob = shift_prob
-        self.gaussian = None
+        self.gaussian = gaussian
         self.illumination = illumination
         self.zoom = zoom
         self.flip = flip
@@ -38,12 +40,27 @@ class ImageDataAugmenter(object):
         #plt.figure()
         #plt.subplot(121), plt.imshow(x), plt.title('Original')
 
+        # Gaussian_noise
+        if self.gaussian is not None:
+            # random_var = np.random.uniform(self.gaussian[0], self.gaussian[1])
+            # random_noise = np.random.randn(x.shape[0], x.shape[1])
+            # image = x.copy()
+            # for c in range(x.shape[2]):
+            #    image[:,:,c] = np.clip(image[:,:,c] + random_var*127.5*random_noise, 0., 255.)
+            # x = image
+            random_var = np.random.uniform(self.gaussian[0], self.gaussian[1])
+            random_noise = np.random.randn(x.shape[0], x.shape[1])
+            image = x.copy()
+            for c in range(x.shape[2]):
+                image[:, :, c] = np.clip(image[:, :, c] + random_var * 127.5 * random_noise, 0., 255.)
+            x = image
+
         # Flip
         if self.flip is not None:
             width = x.shape[0]
             height = x.shape[1]
             # HORIZONTAL FLIP
-            if np.random.random() < self.flip:
+            if None is not None:
                 x = cv.flip(x, 0)
                 if y is not None:
                     for i, lndmk in enumerate(y):
@@ -89,22 +106,21 @@ class ImageDataAugmenter(object):
             #image[:,:,2] = image[:,:,2]+random_bright*10
             #image[:,:,2] = np.clip(image[:,:,2],0.,255.)
             #image = cv.cvtColor(image,cv.COLOR_HSV2RGB)
-            image = x.copy()
+            #image = x.copy()
             random_contrast = np.random.uniform(self.contrast[0], self.contrast[1])
+            factor = (259 * (random_contrast + 255)) / (255 * (259 - random_contrast))
+            image = Image.fromarray(np.uint8(x))
+            for i in range(x.shape[0]):
+                for j in range(x.shape[1]):
+                    color = image.getpixel((i, j))
+                    new_color = tuple(int(factor * (c - 128) + 128) for c in color)
+                    image.putpixel((i, j), new_color)
+            x = numpy.asarray(image)
             #image = x/255.0
-            image[:,:,2] = image[:,:,2]*random_contrast
-            image[:,:,2] = np.clip(image[:,:,2],0.,255.)
+            #image[:,:,2] = image[:,:,2]*random_contrast
+            #image[:,:,2] = np.clip(image[:,:,2],0.,255.)
             #image = image*255
-            x = image
-
-        # Gaussian_noise
-        if self.gaussian is not None:
-            random_var = np.random.uniform(self.gaussian[0], self.gaussian[1])
-            random_noise = np.random.randn(x.shape[0], x.shape[1])
-            image = x.copy()
-            for c in range(x.shape[2]):
-                image[:,:,c] = np.clip(image[:,:,c] + random_var*127.5*random_noise, 0., 255.)
-            x = image
+            #x = image
 
         # Rotation
         if np.random.random() < self.rotation_prob and self.dict['rotation_range'] > 0.:

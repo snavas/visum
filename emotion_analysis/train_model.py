@@ -98,16 +98,17 @@ if __name__ == "__main__":
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
 
-    augmenter = ImageDataAugmenter(rotation_range=45,
+    augmenter = ImageDataAugmenter(rotation_range=2,
                                    rotation_prob=50,
-                                   height_shift_range=0.2,
-                                   width_shift_range=0.3,
-                                   gaussian=[0, 0.3],
-                                   illumination=[-20, 20],
-                                   zoom=[0.85, 1.15],
-                                   flip=0.25,
+                                   height_shift_range=0.05,
+                                   width_shift_range=0.05,
+                                   gaussian=[0,0.1],
+                                   illumination=[-50, 50],
+                                   zoom=[0.95, 1.05],
+                                   flip=0.5,
+                                   #gamma=[0, 0.01],
                                    gamma=None,
-                                   contrast=[-20, 20])
+                                   contrast=[-25, 25])
 
     # Fit model and save statistics in hist
     hist = model.fit_generator(

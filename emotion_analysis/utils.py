@@ -71,23 +71,17 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
                 #x = image.img_to_array(image.load_img(data[i], target_size=output_shape)).astype(np.float32, copy=False)
                 y = np.array(labels[i], copy=True)
 
-                plt.imshow(x)#,plt.title(y+"-"+data[i])
-                #print(y,data[i])
-                plt.show()
-                #plt.figure()
-                #plt.imshow(x)
-                #plt.show()
-                #plt.subplot(121), plt.imshow(x), plt.title('Original')
+                #print(x.shape)
+                #plt.subplot(121), plt.imshow(x/255), plt.title('Original')
 
                 # Augment data
                 if augmenter is not None:
                     assert (type(augmenter) is ImageDataAugmenter)
                     (x, var_que_no_se_usa_DANGER) = augmenter.augment(x, None)
 
-                #plt.figure()
-                #plt.imshow(x)
+                #plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
                 #plt.show()
-                #os.system("pause")
+
 
                 img = preprocess_image(x, net)
                 batch_data[id, :, :, :] = img
