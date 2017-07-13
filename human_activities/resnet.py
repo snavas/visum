@@ -59,7 +59,8 @@ def define_model(n_output, lr, dropout=1.):
 
     # Initialize optimizer
     # opt = keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
-    opt = keras.optimizers.adam(lr, decay=1e-6)
+    #opt = keras.optimizers.adam(lr, decay=1e-6)
+    opt = keras.optimizers.adam()
 
     # Use mean euclidean distance as loss and angular error and mse as metric
     model.compile(loss='categorical_crossentropy',

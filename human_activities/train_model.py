@@ -44,9 +44,9 @@ if __name__ == '__main__':
     n_output = 6
     lr = 0.0001
     dropout = 0.3
-    epochs = 1
+    epochs = 30
     batch_size = 1
-    output_shape = (244, 244, 3)
+    output_shape = (200, 200, 3)
 
     # Load
     f = open('sets/training.csv')
@@ -64,9 +64,9 @@ if __name__ == '__main__':
     classes = sorted(list(set(labels)))
     train_Y = one_hot_encoder(labels, classes, len(labels), len(classes))
 
-    # Just pick 4 videos
-    #train_X = train_X[:1]
-    #train_Y = train_Y[:1]
+    # Just pick 300 videos
+    #train_X = train_X[:300]
+    #train_Y = train_Y[:300]
 
     features = []
 
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     # Test
     test = lines[1:]
-    #test = test[:10]
+    #test = test[:100]
 
 
     output = [','.join(lines[0])]

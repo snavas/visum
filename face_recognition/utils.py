@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from keras.preprocessing import image
+from data_augmenter import ImageDataAugmenter
 
 def mean_center_vgg(x):
     """
@@ -65,10 +66,15 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
                 #print(y,data[i])
                 #plt.show()
 
+                #plt.subplot(121), plt.imshow(x/255), plt.title('Original')
+
                 # Augment data
-                #if augmenter is not None:
-                #    assert (type(augmenter) is ImageDataAugmenter)
-                #    (x, y) = augmenter.augment(x, y)
+                if augmenter is not None:
+                    assert (type(augmenter) is ImageDataAugmenter)
+                    (x, non_used_variable) = augmenter.augment(x, None)
+
+                #plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
+                #plt.show()
 
                 img = preprocess_image(x, net)
                 batch_data[id, :, :, :] = img

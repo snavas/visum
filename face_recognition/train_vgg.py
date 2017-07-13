@@ -16,6 +16,7 @@ import pickle
 from vggface import define_model
 #from image_data_augmenter import ImageDataAugmenter
 from utils import *
+from data_augmenter import ImageDataAugmenter
 
 
 MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
@@ -212,9 +213,22 @@ if __name__ == "__main__":
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
 
+    augmenter = ImageDataAugmenter(rotation_range=4,
+                                   rotation_prob=50,
+                                   height_shift_range=0.07,
+                                   width_shift_range=0.07,
+                                   gaussian=[0, 0.1],
+                                   illumination=[-50, 50],
+                                   zoom=[0.90, 1.1],
+                                   flip=0.5,
+                                   #gamma=[0, 0.01],
+                                   gamma=None,
+                                   contrast=None)
+                                   #contrast=None)
+
     # Fit model and save statistics in hist
     hist = model.fit_generator(
-        data_generator(train_X, train_Y, batch_size, output_shape, n_output, augmenter=None, net='vgg'),
+        data_generator(train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
         steps_per_epoch=np.ceil(len(train_X) / batch_size), epochs=epochs)
 
     model.save('algo.hd5')
