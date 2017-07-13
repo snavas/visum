@@ -78,7 +78,7 @@ if __name__ == "__main__":
     batch_size = 32
     output_shape = (224, 224, 3)
     n_output = 8
-    epochs = 15
+    epochs = 40
     lr = 0.0001
     dropout = 0.3
 
@@ -98,11 +98,11 @@ if __name__ == "__main__":
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
 
-    augmenter = ImageDataAugmenter(rotation_range=2,
-                                   rotation_prob=50,
-                                   height_shift_range=0.05,
-                                   width_shift_range=0.05,
-                                   gaussian=[0,0.1],
+    augmenter = ImageDataAugmenter(rotation_range=0,
+                                   rotation_prob=0,
+                                   height_shift_range=0,
+                                   width_shift_range=0,
+                                   gaussian=[0,0.05],
                                    illumination=[-50, 50],
                                    zoom=[0.95, 1.05],
                                    flip=0.5,

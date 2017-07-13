@@ -38,7 +38,7 @@ class ImageDataAugmenter(object):
 
         #### DEBUG!!!! ######
         #plt.figure()
-        #plt.subplot(121), plt.imshow(x), plt.title('Original')
+        plt.subplot(121), plt.imshow(x/255), plt.title('Original')
 
         # Gaussian_noise
         if self.gaussian is not None:
@@ -187,7 +187,7 @@ class ImageDataAugmenter(object):
 
             #    y1 = np.dot(transf_mat, y[i])
              #   y = np.dot(transf_mat,np.expand_dims(y, axis = 2))
-        #plt.subplot(122), plt.imshow(x), plt.title('Augmented')
-        #plt.show()
+        plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
+        plt.show()
         #os.system("pause")
         return (x,y)
