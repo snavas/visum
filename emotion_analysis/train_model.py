@@ -18,6 +18,7 @@ from vggface import define_model
 from keras.preprocessing import image
 from scipy.misc import imresize
 from sklearn.model_selection import KFold
+import datetime
 
 # TODO change folder structure so that common files are in root/
 from data_augmenter import ImageDataAugmenter
@@ -75,11 +76,14 @@ if __name__ == "__main__":
         new_pic = new_pic.transpose(1,2,0)
         new_X_test[i] = new_pic
 
+    # Experimento
+    experiment = "Experimento 1"
+
     # VGG parameters
     batch_size = 32
     output_shape = (224, 224, 3)
     n_output = 8
-    epochs = 30
+    epochs = 3
     lr = 0.0001
     dropout = 0.3
 
@@ -112,20 +116,25 @@ if __name__ == "__main__":
                                    blur=0.2,
                                    contrast=[-15, 15])
 
+    kfold_index = 0
     kf = KFold(n_splits=5)
     kf.get_n_splits()
     for train_i, validation_i in kf.split(new_train_X):
         x_train, x_validation = new_train_X[train_i], new_train_X[validation_i]
         y_train, y_validation = train_Y[train_i], train_Y[validation_i]
+        kfold_index += 1
 
-    # Fit model and save statistics in hist
-    hist = model.fit_generator(
-        data_generator(x_train, y_train, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
-        steps_per_epoch=np.ceil(len(x_train) / batch_size), epochs=epochs,
-        ####### NEW
-        validation_data = data_generator(x_validation, y_validation, batch_size, output_shape, n_output, augmenter=None, net='vgg'),
-        validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list
-    )
+        # Fit model and save statistics in hist
+        hist = model.fit_generator(
+            data_generator(x_train, y_train, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
+            steps_per_epoch=np.ceil(len(x_train) / batch_size), epochs=epochs,
+            ####### NEW
+            validation_data = data_generator(x_validation, y_validation, batch_size, output_shape, n_output, augmenter=None, net='vgg'),
+            validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list
+        )
+
+        with open('hist_kf'+str(kfold_index)+'-'+datetime.datetime.now().strftime("%y-%m-%d-%H-%M")+'.pickle', 'wb') as f:
+            pickle.dump(hist.history, f)
 
     #hist = model.fit_generator(
     #    data_generator(new_train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
