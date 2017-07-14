@@ -21,6 +21,7 @@ class ImageDataAugmenter(object):
                  zoom = None,
                  flip = None,
                  gamma = None,
+                 blur = None,
                  contrast = None):
         self.dict = {'rotation_range': rotation_range,
                      'width_shift_range': width_shift_range,
@@ -33,12 +34,13 @@ class ImageDataAugmenter(object):
         self.flip = flip
         self.gamma = gamma
         self.contrast = contrast
+        self.blur = blur
 
     def augment(self, x, y):
 
         #### DEBUG!!!! ######
         #plt.figure()
-        plt.subplot(121), plt.imshow(x/255), plt.title('Original')
+        #plt.subplot(121), plt.imshow(x/255), plt.title('Original')
 
         # Gaussian_noise
         if self.gaussian is not None:
@@ -54,6 +56,10 @@ class ImageDataAugmenter(object):
             for c in range(x.shape[2]):
                 image[:, :, c] = np.clip(image[:, :, c] + random_var * 127.5 * random_noise, 0., 255.)
             x = image
+
+        if self.blur is not None:
+            if np.random.random() < self.blur:
+                x = cv.blur(x,(2,2),0)
 
         # Flip
         if self.flip is not None:
@@ -187,7 +193,7 @@ class ImageDataAugmenter(object):
 
             #    y1 = np.dot(transf_mat, y[i])
              #   y = np.dot(transf_mat,np.expand_dims(y, axis = 2))
-        plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
-        plt.show()
+        #plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
+        #plt.show()
         #os.system("pause")
         return (x,y)

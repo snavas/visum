@@ -17,6 +17,7 @@ import pickle
 from vggface import define_model
 from keras.preprocessing import image
 from scipy.misc import imresize
+from sklearn.model_selection import KFold
 
 # TODO change folder structure so that common files are in root/
 from data_augmenter import ImageDataAugmenter
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     batch_size = 32
     output_shape = (224, 224, 3)
     n_output = 8
-    epochs = 40
+    epochs = 30
     lr = 0.0001
     dropout = 0.3
 
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True)
 
     # Early stopping
-    earlystopping = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=40, verbose=1, mode='min')
+    earlystopping = EarlyStopping(monitor='val_loss', min_delta=0.0001, patience=2, verbose=1, mode='min')
 
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
@@ -103,17 +104,33 @@ if __name__ == "__main__":
                                    height_shift_range=0,
                                    width_shift_range=0,
                                    gaussian=[0,0.05],
-                                   illumination=[-50, 50],
-                                   zoom=[0.95, 1.05],
+                                   illumination=[-25, 25],
+                                   zoom=[1, 1.01],
                                    flip=0.5,
                                    #gamma=[0, 0.01],
                                    gamma=None,
-                                   contrast=[-25, 25])
+                                   blur=0.2,
+                                   contrast=[-15, 15])
+
+    kf = KFold(n_splits=5)
+    kf.get_n_splits()
+    for train_i, validation_i in kf.split(new_train_X):
+        x_train, x_validation = new_train_X[train_i], new_train_X[validation_i]
+        y_train, y_validation = train_Y[train_i], train_Y[validation_i]
 
     # Fit model and save statistics in hist
     hist = model.fit_generator(
-        data_generator(new_train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
-        steps_per_epoch=np.ceil(len(train_X) / batch_size), epochs=epochs)
+        data_generator(x_train, y_train, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
+        steps_per_epoch=np.ceil(len(x_train) / batch_size), epochs=epochs,
+        ####### NEW
+        validation_data = data_generator(x_validation, y_validation, batch_size, output_shape, n_output, augmenter=None, net='vgg'),
+        validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list
+    )
+
+    #hist = model.fit_generator(
+    #    data_generator(new_train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
+    #    steps_per_epoch=np.ceil(len(train_X) / batch_size), epochs=epochs)
+
 
     model.save('algo.hd5')
 
