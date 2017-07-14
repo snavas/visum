@@ -14,7 +14,7 @@ from keras.engine import Model
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import matplotlib.pyplot as plt
 import pickle
-from vggface import define_model
+from vggface_landmarks import define_model
 from keras.preprocessing import image
 from scipy.misc import imresize
 from sklearn.model_selection import KFold
@@ -103,10 +103,6 @@ if __name__ == "__main__":
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
 
-    new_train_X = new_train_X[:10]
-    train_kpts = train_kpts[:10]
-    train_Y = train_Y[:10]
-
     augmenter = ImageDataAugmenter(rotation_range=0,
                                    rotation_prob=0,
                                    height_shift_range=0,
@@ -135,8 +131,7 @@ if __name__ == "__main__":
             ####### NEW
             validation_data = data_generator(x_validation, val_landmarks, y_validation, batch_size, output_shape, n_output,
                                              augmenter=None, net='vgg'),
-            validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list
-        )
+            validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list)
 
         with open('hist_kf'+str(kfold_index)+'-'+datetime.datetime.now().strftime("%y-%m-%d-%H-%M")+'.pickle', 'wb') as f:
             pickle.dump(hist.history, f)
