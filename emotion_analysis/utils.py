@@ -36,7 +36,7 @@ def unison_shuffled_copies(a, b):
     return [a[i] for i in p],[b[i] for i in p]
 
 
-def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=None, shuffle=True, net='vgg'):
+def data_generator(data, landmarks, labels, batch_size, output_shape, n_output, augmenter=None, shuffle=True, net='vgg'):
     """
        Keras generator yielding batches of training/validation data.
        Applies data augmentation pipeline if `augment` is True.
@@ -54,6 +54,7 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
             # Output arrays
             batch_data = np.zeros((len(batch_idxs), output_shape[0], output_shape[1], output_shape[2]),
                                   dtype=np.float32)
+            batch_landmarks = np.zeros((len(batch_idxs), 136))
             batch_labels = np.zeros((len(batch_idxs), n_output), dtype=np.float32)
 
             # Read in and preprocess a batch of images
@@ -67,7 +68,7 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
                 #print(new_img.shape)
                 x = image.img_to_array(new_img).astype(np.float32, copy=False)
 
-
+                lmdks = np.array(landmarks[i,:], copy=True)
                 #x = image.img_to_array(image.load_img(data[i], target_size=output_shape)).astype(np.float32, copy=False)
                 y = np.array(labels[i], copy=True)
 
@@ -77,17 +78,17 @@ def data_generator(data, labels, batch_size, output_shape, n_output, augmenter=N
                 # Augment data
                 if augmenter is not None:
                     assert (type(augmenter) is ImageDataAugmenter)
-                    (x, var_que_no_se_usa_DANGER) = augmenter.augment(x, None)
+                    (x, lmdks) = augmenter.augment(x, lmdks)
 
                 #plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
                 #plt.show()
 
-
                 img = preprocess_image(x, net)
                 batch_data[id, :, :, :] = img
                 batch_labels[id, :] = y
+                batch_landmarks[id, :] = lmdks.flatten()/255
                 id_data = id_data + 1
 
-            yield (batch_data, batch_labels)
+            yield ([batch_data, batch_landmarks], batch_labels)
 
 

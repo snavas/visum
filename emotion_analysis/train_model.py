@@ -103,6 +103,10 @@ if __name__ == "__main__":
     # List of callbacks to add to fit function
     callbacks_list = [checkpoint, earlystopping]
 
+    new_train_X = new_train_X[:10]
+    train_kpts = train_kpts[:10]
+    train_Y = train_Y[:10]
+
     augmenter = ImageDataAugmenter(rotation_range=0,
                                    rotation_prob=0,
                                    height_shift_range=0,
@@ -120,16 +124,17 @@ if __name__ == "__main__":
     kf = KFold(n_splits=5)
     kf.get_n_splits()
     for train_i, validation_i in kf.split(new_train_X):
-        x_train, x_validation = new_train_X[train_i], new_train_X[validation_i]
-        y_train, y_validation = train_Y[train_i], train_Y[validation_i]
+        x_train, x_validation, train_landmarks = new_train_X[train_i], new_train_X[validation_i], train_kpts[train_i]
+        y_train, y_validation, val_landmarks = train_Y[train_i], train_Y[validation_i], train_kpts[validation_i]
         kfold_index += 1
 
         # Fit model and save statistics in hist
         hist = model.fit_generator(
-            data_generator(x_train, y_train, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
+            data_generator(x_train, train_landmarks, y_train, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
             steps_per_epoch=np.ceil(len(x_train) / batch_size), epochs=epochs,
             ####### NEW
-            validation_data = data_generator(x_validation, y_validation, batch_size, output_shape, n_output, augmenter=None, net='vgg'),
+            validation_data = data_generator(x_validation, val_landmarks, y_validation, batch_size, output_shape, n_output,
+                                             augmenter=None, net='vgg'),
             validation_steps = np.ceil(len(x_validation) / batch_size), callbacks = callbacks_list
         )
 
@@ -159,7 +164,7 @@ if __name__ == "__main__":
     # val_x = preprocess_image(val_x)
     print(val_x.shape)
 
-    preds = model.predict(val_x)
+    preds = model.predict([val_x, kpts_test.flatten()/255])
 
     # ==============================================================================
     # MAKE A SUBMISSION
