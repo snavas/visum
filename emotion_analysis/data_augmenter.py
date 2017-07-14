@@ -183,7 +183,7 @@ class ImageDataAugmenter(object):
             x = imagek.img_to_array(x)
 
             if y is not None:
-                y = np.hstack((y, np.ones((5,1))))
+                y = np.hstack((y, np.ones((68,1))))
                 y = np.dot(transf_mat, np.transpose(y))
                 y = np.transpose(np.delete(y, 2, 0))
 
