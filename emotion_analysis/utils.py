@@ -73,15 +73,15 @@ def data_generator(data, landmarks, labels, batch_size, output_shape, n_output, 
                 y = np.array(labels[i], copy=True)
 
                 #print(x.shape)
-                #plt.subplot(121), plt.imshow(x/255), plt.title('Original')
+                plt.subplot(121), plt.imshow(x/255), plt.title('Original')
 
                 # Augment data
                 if augmenter is not None:
                     assert (type(augmenter) is ImageDataAugmenter)
                     (x, lmdks) = augmenter.augment(x, lmdks)
 
-                #plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
-                #plt.show()
+                plt.subplot(122), plt.imshow(x/255), plt.title('Augmented')
+                plt.show()
 
                 img = preprocess_image(x, net)
                 batch_data[id, :, :, :] = img

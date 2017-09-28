@@ -193,7 +193,7 @@ if __name__ == "__main__":
     batch_size = 16
     output_shape = (224, 224, 3)
     n_output = 19
-    epochs = 40
+    epochs = 35
     lr = 0.00001
     dropout = 0.3
 
@@ -224,14 +224,13 @@ if __name__ == "__main__":
                                    #gamma=[0, 0.01],
                                    gamma=None,
                                    contrast=None)
-                                   #contrast=None)
 
     # Fit model and save statistics in hist
     hist = model.fit_generator(
         data_generator(train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
         steps_per_epoch=np.ceil(len(train_X) / batch_size), epochs=epochs)
 
-    model.save('algo.hd5')
+    model.save('algo-35.hd5')
 
     #with open('hist_algo.pickle', 'wb') as f:
     #    pickle.dump(hist.history, f)

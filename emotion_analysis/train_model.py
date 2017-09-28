@@ -83,7 +83,7 @@ if __name__ == "__main__":
     batch_size = 32
     output_shape = (224, 224, 3)
     n_output = 8
-    epochs = 3
+    epochs = 7
     lr = 0.0001
     dropout = 0.3
 
@@ -115,7 +115,7 @@ if __name__ == "__main__":
                                    gamma=None,
                                    blur=0.2,
                                    contrast=[-15, 15])
-
+    """
     kfold_index = 0
     kf = KFold(n_splits=5)
     kf.get_n_splits()
@@ -135,11 +135,12 @@ if __name__ == "__main__":
 
         with open('hist_kf'+str(kfold_index)+'-'+datetime.datetime.now().strftime("%y-%m-%d-%H-%M")+'.pickle', 'wb') as f:
             pickle.dump(hist.history, f)
-
-    #hist = model.fit_generator(
-    #    data_generator(new_train_X, train_Y, batch_size, output_shape, n_output, augmenter=augmenter, net='vgg'),
-    #    steps_per_epoch=np.ceil(len(train_X) / batch_size), epochs=epochs)
-
+    """
+    hist = model.fit_generator(data_generator(new_train_X, train_kpts, train_Y, batch_size, output_shape, n_output,
+                                              augmenter=augmenter, net='vgg'),
+                                steps_per_epoch=np.ceil(len(new_train_X) / batch_size), epochs=epochs)
+    with open('hist_kf_submission_' + '-' + datetime.datetime.now().strftime("%y-%m-%d-%H-%M") + '.pickle','wb') as f:
+        pickle.dump(hist.history, f)
 
     model.save('algo.hd5')
 
@@ -159,7 +160,7 @@ if __name__ == "__main__":
     # val_x = preprocess_image(val_x)
     print(val_x.shape)
 
-    preds = model.predict([val_x, kpts_test.flatten()/255])
+    preds = model.predict([val_x, kpts_test.reshape((len(kpts_test), 68 * 2)) / 255])
 
     # ==============================================================================
     # MAKE A SUBMISSION
@@ -171,7 +172,7 @@ if __name__ == "__main__":
         output.append(str(i) + ',' + ','.join(map(str, preds[i])))
 
     if len(os.sys.argv) == 1:
-        outf = "my_predictions_vgg.csv"
+        outf = "my_predictions_vgg_landmarks.csv"
     else:
         outf = os.sys.argv[1]
 

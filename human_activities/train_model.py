@@ -44,7 +44,7 @@ if __name__ == '__main__':
     n_output = 6
     lr = 0.0001
     dropout = 0.3
-    epochs = 30
+    epochs = 20
     batch_size = 1
     output_shape = (200, 200, 3)
 
